@@ -19,7 +19,7 @@ export const appSettings = {
     sessionSecret: process.env.SESSION_SECRET,
   },
   mongoose: {
-    uri: process.env.MONGO_URL,
+    uri: process.env.MONGO_URI,
   },
   s3: {
     accessKey: process.env.AWS_ACCESS_KEY_ID,

@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { User } from '../../user/entities/user.entity';
 import { File } from 'src/apis/media/entities/file.entity';
-import autopopulateSoftDelete from 'src/mongoose-plugins/autopopulate-soft-delete';
+import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
 
 @Schema({})
 export class Profile {

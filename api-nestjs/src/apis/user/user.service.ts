@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { User, UserDocument } from './entities/user.entity';
 import { FilterDto } from './dto/filter.dto';
-import { CreateUserDto } from '../auth/dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { Profile } from '../profile/entities/profile.entity';
 
 @Injectable()
@@ -36,11 +36,13 @@ export class UserService {
   async creatOne(userDto: CreateUserDto) {
     try {
       var newUser = await this.userModel.create(userDto);
+
       var profile = new Profile();
       profile.user = newUser._id;
       const newProfile = await this.profileModel.create(profile);
       newUser.profile = newProfile._id;
       newProfile.save();
+
       newUser.save();
       return {
         message: 'Create success',

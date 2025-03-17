@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { User } from 'src/apis/user/entities/user.entity';
-import autopopulateSoftDelete from 'src/mongoose-plugins/autopopulate-soft-delete';
+import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
 
 @Schema({
   timestamps: true,

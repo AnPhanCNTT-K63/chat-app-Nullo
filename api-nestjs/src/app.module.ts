@@ -2,6 +2,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { appSettings } from './configs/app-settings';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './apis/auth/auth.module';
+import { UsersModule } from './apis/user/user.module';
+import { MediaModule } from './apis/media/media.module';
+import { ProfileModule } from './apis/profile/profile.module';
 
 @Module({
   imports: [
@@ -13,6 +17,10 @@ import { ConfigModule } from '@nestjs/config';
         uri: appSettings.mongoose.uri,
       }),
     }),
+    AuthModule,
+    UsersModule,
+    MediaModule,
+    ProfileModule,
   ],
   controllers: [],
   providers: [],
