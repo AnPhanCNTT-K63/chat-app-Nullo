@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   fluro: ^2.0.5
+  dio: ^5.4.0
   flutter:
     sdk: flutter
 
