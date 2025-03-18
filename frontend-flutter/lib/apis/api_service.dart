@@ -15,7 +15,7 @@ class ApiService {
   Future<dynamic> getRequest(String endpoint, {Map<String, dynamic>? queryParams}) async {
     try {
       Response response = await dio.get(endpoint, queryParameters: queryParams);
-      return response.data;
+      return response.data["data"];
     } on DioException catch (e) {
       return _handleError(e);
     }
@@ -25,7 +25,7 @@ class ApiService {
   Future<dynamic> postRequest(String endpoint, Map<String, dynamic> data) async {
     try {
       Response response = await dio.post(endpoint, data: data);
-      return response.data;
+      return response.data["data"];
     } on DioException catch (e) {
       return _handleError(e);
     }
@@ -35,7 +35,7 @@ class ApiService {
   Future<dynamic> putRequest(String endpoint, Map<String, dynamic> data) async {
     try {
       Response response = await dio.put(endpoint, data: data);
-      return response.data;
+      return response.data["data"];
     } on DioException catch (e) {
       return _handleError(e);
     }
@@ -45,7 +45,7 @@ class ApiService {
   Future<dynamic> patchRequest(String endpoint, Map<String, dynamic> data) async {
     try {
       Response response = await dio.patch(endpoint, data: data);
-      return response.data;
+      return response.data["data"];
     } on DioException catch (e) {
       return _handleError(e);
     }
@@ -55,7 +55,7 @@ class ApiService {
   Future<dynamic> deleteRequest(String endpoint) async {
     try {
       Response response = await dio.delete(endpoint);
-      return response.data;
+      return response.data["data"];
     } on DioException catch (e) {
       return _handleError(e);
     }

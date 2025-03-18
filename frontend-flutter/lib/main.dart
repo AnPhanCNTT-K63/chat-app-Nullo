@@ -1,9 +1,18 @@
+import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:app_chat_nullo/routes/router.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   AppRouter.setupRouter();
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -16,5 +25,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

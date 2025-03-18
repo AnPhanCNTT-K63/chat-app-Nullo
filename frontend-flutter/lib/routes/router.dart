@@ -1,3 +1,4 @@
+import 'package:app_chat_nullo/views/account_screen.dart';
 import 'package:app_chat_nullo/views/home_screen.dart';
 import 'package:app_chat_nullo/views/login_screen.dart';
 import 'package:app_chat_nullo/views/register_screen.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 
 class AppRouter {
   static final FluroRouter router = FluroRouter();
+
   static Handler _homeHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, dynamic> params) => HomeScreen(),
   );
@@ -17,9 +19,14 @@ class AppRouter {
     handlerFunc: (BuildContext? context, Map<String, dynamic> params) => RegisterScreen(),
   );
 
+  static Handler _acccountHandler = Handler(
+    handlerFunc: (BuildContext? context, Map<String, dynamic> params) => AccountScreen(),
+  );
+
   static void setupRouter() {
     router.define("/", handler: _homeHandler);
     router.define("/login", handler: _loginHandler);
     router.define("/register", handler: _registerHandler);
+    router.define("/account", handler: _acccountHandler);
   }
 }
