@@ -1,14 +1,12 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
-import { User, UserDocument } from './entities/user.entity';
-import { FilterDto } from './dto/filter.dto';
+import { FilterQuery, Model, Types } from 'mongoose';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Profile } from '../profile/entities/profile.entity';
+import { UpdateAccountDto } from './dto/update-account.dto';
+import { UserPayload } from 'src/base/models/user-payload.model';
 
 @Injectable()
 export class UserService {
@@ -19,15 +17,18 @@ export class UserService {
     private readonly profileModel: Model<Profile>,
   ) {}
 
-  getAll(filterQuery?: FilterDto) {
-    const filter: FilterQuery<User> = this.buildFilter(filterQuery);
-
-    return this.userModel.find(filter);
+  async getAll(filter: FilterQuery<User> = {}) {
+    return await this.userModel
+      .find(filter)
+      .populate(this.getPopulateOptions())
+      .exec();
   }
 
-  getOne(filter: FilterQuery<User>) {
+  async getOne(filter: FilterQuery<User>) {
     try {
-      return this.userModel.findOne(filter);
+      return await this.userModel
+        .findOne(filter)
+        .populate(this.getPopulateOptions());
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -52,17 +53,31 @@ export class UserService {
     }
   }
 
-  private buildFilter(filterQuery?: FilterDto): FilterQuery<User> {
-    if (!filterQuery || Object.keys(filterQuery).length === 0) {
-      return {};
+  async updateAccount(
+    userPayload: UserPayload,
+    updateDto: Partial<UpdateAccountDto>,
+  ) {
+    try {
+      if (updateDto.password) {
+        updateDto.password = await bcrypt.hash(updateDto.password, 10);
+      }
+
+      const existingUser = await this.userModel.findByIdAndUpdate(
+        new Types.ObjectId(userPayload._id),
+        { $set: updateDto },
+        { new: true },
+      );
+
+      return existingUser;
+    } catch (error) {
+      throw new BadRequestException(error);
     }
+  }
 
-    const filter: FilterQuery<User> = {};
-
-    if (filterQuery.username) {
-      filter.username = { $regex: filterQuery.username, $options: 'i' };
-    }
-
-    return filter;
+  private getPopulateOptions() {
+    return {
+      path: 'profile',
+      populate: ['avatar'],
+    };
   }
 }

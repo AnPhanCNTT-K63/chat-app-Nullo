@@ -1,13 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { UserLoginDto } from '../user/dto/user-login.dto';
-import { UserRegisterDto } from '../user/dto/user-register.dto';
+import { UserLoginDto } from './dto/user-login.dto';
+import { UserRegisterDto } from './dto/user-register.dto';
 import { UserService } from '../user/user.service';
 import { appSettings } from 'src/configs/app-settings';
 import { UserPayload } from 'src/base/models/user-payload.model';
 // import { CheckPasswordDto } from './dto/check-password.dto';
 import { Types } from 'mongoose';
+import { CheckPasswordDto } from './dto/check-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -95,22 +100,20 @@ export class AuthService {
     };
   }
 
-  // async checkPassword(checkDto: CheckPasswordDto) {
-  //   try {
-  //     const existingUser = await this.userService.getOne({
-  //       _id: new Types.ObjectId(checkDto.user),
-  //     });
+  async checkPassword(userPayload: UserPayload, checkDto: CheckPasswordDto) {
+    const existingUser = await this.userService.getOne({
+      _id: new Types.ObjectId(userPayload._id),
+    });
 
-  //     const isPasswordValid = await bcrypt.compare(
-  //       checkDto.password,
-  //       existingUser.password,
-  //     );
+    if (!existingUser) throw new NotFoundException();
 
-  //     if (!isPasswordValid) {
-  //       throw new BadRequestException('Invalid email or password');
-  //     }
-  //   } catch (error) {
-  //     throw new BadRequestException(error);
-  //   }
-  // }
+    const isPasswordValid = await bcrypt.compare(
+      checkDto.password,
+      existingUser.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new BadRequestException('Invalid password');
+    }
+  }
 }

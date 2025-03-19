@@ -3,6 +3,8 @@ import { Types } from 'mongoose';
 import { User } from 'src/apis/user/entities/user.entity';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
 
+export type FileDocument = File & Document;
+
 @Schema({
   timestamps: true,
 })

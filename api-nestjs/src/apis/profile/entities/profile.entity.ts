@@ -4,6 +4,8 @@ import { User } from '../../user/entities/user.entity';
 import { File } from 'src/apis/media/entities/file.entity';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
 
+export type ProfileDocument = Profile & Document;
+
 @Schema({})
 export class Profile {
   @Prop({
@@ -22,24 +24,6 @@ export class Profile {
     type: String,
     required: false,
   })
-  address: string;
-
-  @Prop({
-    type: String,
-    required: false,
-  })
-  postalCode: string;
-
-  @Prop({
-    type: String,
-    required: false,
-  })
-  aboutMe: string;
-
-  @Prop({
-    type: String,
-    required: false,
-  })
   phone: string;
 
   @Prop({
@@ -47,20 +31,6 @@ export class Profile {
     required: false,
   })
   birthday: Date;
-
-  @Prop({
-    type: String,
-    required: false,
-  })
-  country: string;
-
-  @Prop({
-    type: Types.ObjectId,
-    required: false,
-    ref: 'File',
-    refClass: File,
-  })
-  coverPhoto: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,

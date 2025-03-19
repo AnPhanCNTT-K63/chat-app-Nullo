@@ -14,10 +14,13 @@ export class ProfileService {
     private readonly mediaService: MediaService,
   ) {}
 
-  async updateOne(userId: string, profileDto: Partial<CreateProfileDto>) {
+  async updateOne(
+    userPayload: UserPayload,
+    profileDto: Partial<CreateProfileDto>,
+  ) {
     try {
       const updatedProfile = await this.profileModel.findOneAndUpdate(
-        { user: new Types.ObjectId(userId) },
+        { user: new Types.ObjectId(userPayload._id) },
         { $set: profileDto },
         { new: true },
       );
@@ -56,38 +59,6 @@ export class ProfileService {
       }
 
       existingProfile.avatar = newAvatarFile._id;
-
-      await existingProfile.save();
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
-
-  async uploadCoverPhoto(coverPhoto: IUploadedMulterFile, user: UserPayload) {
-    try {
-      if (!coverPhoto) return new BadRequestException('Avatar null');
-
-      const newCoverPhoto = await this.mediaService.createFile(
-        coverPhoto,
-        user,
-        'cover-photos',
-      );
-
-      if (newCoverPhoto instanceof BadRequestException) throw newCoverPhoto;
-
-      const existingProfile = await this.profileModel.findOne({
-        user: new Types.ObjectId(user._id),
-      });
-
-      newCoverPhoto.createdBy = user._id;
-
-      await newCoverPhoto.save();
-
-      if (!existingProfile) {
-        throw new BadRequestException('Profile not found');
-      }
-
-      existingProfile.coverPhoto = newCoverPhoto._id;
 
       await existingProfile.save();
     } catch (error) {

@@ -1,7 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from '../auth.service';
-import { UserLoginDto } from '../../user/dto/user-login.dto';
-import { UserRegisterDto } from '../../user/dto/user-register.dto';
+import { UserLoginDto } from '../dto/user-login.dto';
+import { UserRegisterDto } from '../dto/user-register.dto';
+import { CheckPasswordDto } from '../dto/check-password.dto';
+import { Me } from 'src/decorators/me.decorator';
+import { UserPayload } from 'src/base/models/user-payload.model';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +22,13 @@ export class AuthController {
     return this.authService.register(userRegister);
   }
 
-  //   @Post('check-password')
-  //   checkPassword(@Body() checkDto: CheckPasswordDto) {
-  //     return this.authService.checkPassword(checkDto);
-  //   }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('check-password')
+  checkPassword(
+    @Me() userPayload: UserPayload,
+    @Body() checkDto: CheckPasswordDto,
+  ) {
+    return this.authService.checkPassword(userPayload, checkDto);
+  }
 }
