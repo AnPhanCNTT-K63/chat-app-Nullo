@@ -1,5 +1,7 @@
 import 'package:app_chat_nullo/apis/api_service.dart';
+import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -7,9 +9,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiService apiService = ApiService();
+  final ApiService _apiService = ApiService();
+
   dynamic users = [];
-  dynamic filteredUsers = [];
   bool isLoading = true;
   String errorMessage = '';
   TextEditingController searchController = TextEditingController();
@@ -22,10 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchUsers() async {
     try {
-      var response = await apiService.getRequest("users"); // Adjust endpoint
+      var response = await _apiService.get("user");
       setState(() {
-        users = response ?? [];
-        filteredUsers = users;
+        users = response["data"] ?? [];
         isLoading = false;
       });
     } catch (e) {
@@ -36,16 +37,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void filterUsers(String query) {
-    setState(() {
-      filteredUsers = users.where((user) {
-        return user["username"].toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final currentUserEmail = userProvider.email;
+
+    // Filter out the current user
+    final filteredUsers = users.where((user) => user["email"] != currentUserEmail).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Chat App'),
@@ -87,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onChanged: filterUsers,
             ),
             SizedBox(height: 10),
             Expanded(

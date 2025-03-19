@@ -6,6 +6,8 @@ import { AuthModule } from './apis/auth/auth.module';
 import { UsersModule } from './apis/user/user.module';
 import { MediaModule } from './apis/media/media.module';
 import { ProfileModule } from './apis/profile/profile.module';
+import { ConversationModule } from './apis/conversation/conversation.module';
+import { MessageModule } from './apis/message/message.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { ProfileModule } from './apis/profile/profile.module';
     UsersModule,
     MediaModule,
     ProfileModule,
+    ConversationModule,
+    MessageModule,
   ],
   controllers: [],
   providers: [],

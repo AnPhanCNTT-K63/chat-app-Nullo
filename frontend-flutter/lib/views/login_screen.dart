@@ -2,7 +2,6 @@ import 'package:app_chat_nullo/apis/services/auth_service.dart';
 import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -10,31 +9,28 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthService authService = AuthService();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  final AuthService _authService = AuthService();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
 
   Future<void> _login(BuildContext context) async {
-    if (isLoading) return; // Prevent multiple calls
+    if (isLoading) return;
 
     setState(() => isLoading = true);
 
     try {
-      final response = await authService.login(
-        emailController.text.trim(),
-        passwordController.text.trim(),
+      final response = await _authService.login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
       );
 
       if (response == null || response["error"] != null) {
         String errorMessage = response?["error"]?["message"] ?? "Login failed!";
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
       } else {
-        // Load user data using provider without forcing rebuild
         await context.read<UserProvider>().loadUserData();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login successful!")));
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushNamed(context, '/');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Something went wrong. Try again.")));
@@ -62,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Text("Welcome Back!", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               SizedBox(height: 20),
               TextField(
-                controller: emailController,
+                controller: _emailController,
                 decoration: InputDecoration(
                   labelText: "Email",
                   border: OutlineInputBorder(),
@@ -71,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 15),
               TextField(
-                controller: passwordController,
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: "Password",

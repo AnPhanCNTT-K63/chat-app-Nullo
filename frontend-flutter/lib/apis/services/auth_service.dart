@@ -1,9 +1,8 @@
 import 'package:app_chat_nullo/apis/api_service.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
-  final ApiService apiService = ApiService();
+  final ApiService _apiService = ApiService();
   final FlutterSecureStorage _storage = FlutterSecureStorage();
   String? _token;
 
@@ -27,35 +26,36 @@ class AuthService {
 
   // Login
   Future<Map<String, dynamic>> login(String email, String password) async {
-    try {
-      var response = await apiService.postRequest("auth/signin", {
+      var response = await _apiService.post("auth/signin", {
         "email": email,
         "password": password,
       });
 
-      if (response != null && response["accessToken"] != null) {
-        await saveToken(response["accessToken"]);
+      if (response != null && response["data"]["accessToken"] != null) {
+        await saveToken(response["data"]["accessToken"]);
       }
 
-      return response; // Return full response
-    } catch (e) {
-      return {"error": "Login failed: $e"}; // Return error message
+      return response;
     }
-  }
 
-
+  // Register
   Future<Map<String, dynamic>> register(String username, String email, String password) async {
-    try {
-      final response = await apiService.postRequest("auth/signup", {
+      final response = await _apiService.post("auth/signup", {
         "username": username,
         "email": email,
         "password": password,
       });
 
-      return response; // Return response for error handling
-    } catch (e) {
-      return {"error": "Registration failed: $e"};
-    }
+      return response;
+  }
+
+  // Check password
+  Future<Map<String, dynamic>> checkPassword(String password) async {
+      final response = await _apiService.post("auth/check-password", {
+        "password": password,
+      });
+
+      return response;
   }
 
   // Logout
@@ -63,13 +63,4 @@ class AuthService {
     await removeToken();
   }
 
-  // Attach token to API requests
-  Future<Dio> getAuthorizedDio() async {
-    Dio dio = apiService.dio;
-    String? token = await getToken();
-    if (token != null) {
-      dio.options.headers["Authorization"] = "Bearer $token";
-    }
-    return dio;
-  }
 }
