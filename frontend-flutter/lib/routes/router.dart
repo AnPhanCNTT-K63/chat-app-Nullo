@@ -1,6 +1,7 @@
 import 'package:app_chat_nullo/views/account_screen.dart';
 import 'package:app_chat_nullo/views/home_screen.dart';
 import 'package:app_chat_nullo/views/login_screen.dart';
+import 'package:app_chat_nullo/views/profile_screen.dart';
 import 'package:app_chat_nullo/views/register_screen.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
@@ -23,10 +24,15 @@ class AppRouter {
     handlerFunc: (BuildContext? context, Map<String, dynamic> params) => AccountScreen(),
   );
 
+  static Handler _profileHandler = Handler(
+    handlerFunc: (BuildContext? context, Map<String, dynamic> params) => ProfileScreen(),
+  );
+
   static void setupRouter() {
     router.define("/", handler: _homeHandler);
     router.define("/login", handler: _loginHandler);
     router.define("/register", handler: _registerHandler);
     router.define("/account", handler: _acccountHandler);
+    router.define("/profile", handler: _profileHandler);
   }
 }
