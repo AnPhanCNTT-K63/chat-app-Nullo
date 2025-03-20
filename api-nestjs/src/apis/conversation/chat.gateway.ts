@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway(3002, {
+@WebSocketGateway({
   cors: {
     origin: '*',
   },
@@ -46,6 +46,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('addUser')
   handleAddUser(client: Socket, userId: string): void {
+    console.log(userId);
     this.addUser(userId, client.id);
     this.server.emit('getUsers', this.users);
   }
@@ -56,9 +57,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     payload: { senderId: string; receiverId: string; text: string },
   ): void {
     const { senderId, receiverId, text } = payload;
+    console.log(payload);
     const user = this.getUser(receiverId);
     if (user) {
-      this.server.to(user.socketId).emit('getMessage', { senderId, text });
+      this.server
+        .to(user.socketId)
+        .emit('getMessage', { senderId, text, receiverId });
     }
   }
 }
