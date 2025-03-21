@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_chat_nullo/apis/api_service.dart';
 import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +44,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final userProvider = Provider.of<UserProvider>(context);
     final currentUserEmail = userProvider.email;
 
-    // Filter out the current user
+    final currentUser = users.firstWhere(
+          (user) => user["email"] == currentUserEmail,
+      orElse: () => {},
+    );
     final filteredUsers = users.where((user) => user["email"] != currentUserEmail).toList();
+
+    String avatarUrl = currentUser["profile"]?["avatar"]?["filePath"] ?? "";
 
     return Scaffold(
       appBar: AppBar(
@@ -54,19 +61,34 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.refresh),
             onPressed: fetchUsers,
           ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == "profile") {
-                Navigator.pushNamed(context, '/profile');
-              } else if (value == "account") {
-                Navigator.pushNamed(context, '/account');
-              }
+          GestureDetector(
+            onTap: () {
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(1000, 80, 10, 0),
+                items: [
+                  PopupMenuItem(
+                    value: "profile",
+                    child: Text("Profile"),
+                    onTap: () => Navigator.pushNamed(context, '/profile'),
+                  ),
+                  PopupMenuItem(
+                    value: "account",
+                    child: Text("Account"),
+                    onTap: () => Navigator.pushNamed(context, '/account'),
+                  ),
+
+                ],
+              );
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(value: "profile", child: Text("Profile")),
-              PopupMenuItem(value: "account", child: Text("Account")),
-            ],
+            child: CircleAvatar(
+                radius: 25,
+                backgroundImage: avatarUrl.isNotEmpty
+                 ? NetworkImage(avatarUrl)
+                  : AssetImage("assets/default_avatar.png"),
+            ),
           ),
+          SizedBox(width: 15),
         ],
       ),
       body: isLoading
@@ -113,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       subtitle: Text(filteredUsers[index]["email"], style: TextStyle(color: Colors.grey[700])),
                       trailing: Icon(Icons.chat_bubble, color: Colors.blueGrey),
                       onTap: () {
+                        print('Navigating to ChatScreen with user: ${filteredUsers[index]}');
                         Navigator.pushNamed(context, '/chat', arguments: filteredUsers[index]);
                       },
                     ),
