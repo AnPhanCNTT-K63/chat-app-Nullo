@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 export const appSettings = {
   port: Number(process.env.PORT) || 3000,
+  socketPort: Number(process.env.SOCKET_PORT),
   development: process.env.DEVELOPMENT,
   mainLanguage: process.env.MAIN_LANGUAGE || 'en',
   maxFileSize: {
