@@ -11,9 +11,9 @@ export class ConversationService {
     private readonly conversationModel: Model<Conversation>,
   ) {}
 
-  getAll() {
+  async getAll() {
     try {
-      return this.conversationModel.find().exec();
+      return await this.conversationModel.find().exec();
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -21,19 +21,23 @@ export class ConversationService {
 
   async createOne(dto: CreateConversationDto) {
     try {
-      var res = await this.conversationModel.create({
-        members: [dto.senderId, dto.receiverId],
+      const existingConversation = await this.conversationModel.findOne({
+        members: { $all: [dto.senderId, dto.receiverId] },
       });
 
-      if (!res) throw new BadRequestException("Can't create");
+      if (existingConversation) return existingConversation;
+
+      return await this.conversationModel.create({
+        members: [dto.senderId, dto.receiverId],
+      });
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
-  getByUserId(id: string) {
+  async getByUserId(id: string) {
     try {
-      return this.conversationModel
+      return await this.conversationModel
         .find({
           members: { $in: [id] },
         })

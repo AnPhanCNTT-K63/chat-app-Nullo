@@ -34,7 +34,7 @@ export class UserController {
 
   @Get()
   async getAllUsers() {
-    return this.usersService.getAll();
+    return await this.usersService.getAll();
   }
 
   @Get('me')
@@ -46,7 +46,7 @@ export class UserController {
 
   @Get(':id')
   async getUserById(@Param('id', ParseObjectIdPipe) id: string) {
-    return this.usersService.getOne({ _id: new Types.ObjectId(id) });
+    return await this.usersService.getOne({ _id: new Types.ObjectId(id) });
   }
 
   @Post('upload-avatar')
@@ -76,11 +76,11 @@ export class UserController {
       },
     }),
   )
-  uploadAvatar(
+  async uploadAvatar(
     @Me() user: UserPayload,
     @UploadedFile() avatar: IUploadedMulterFile,
   ) {
-    return this.profileService.uploadAvatar(avatar, user);
+    return await this.profileService.uploadAvatar(avatar, user);
   }
 
   @Patch('update-account')
@@ -92,10 +92,10 @@ export class UserController {
   }
 
   @Patch('/update-profile')
-  updateProfile(
+  async updateProfile(
     @Me() userPayload: UserPayload,
     @Body() profileDto: CreateProfileDto,
   ) {
-    return this.profileService.updateOne(userPayload, profileDto);
+    return await this.profileService.updateOne(userPayload, profileDto);
   }
 }

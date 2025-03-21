@@ -13,22 +13,22 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signin')
-  login(@Body() userLogin: UserLoginDto) {
-    return this.authService.login(userLogin);
+  async login(@Body() userLogin: UserLoginDto) {
+    return await this.authService.login(userLogin);
   }
 
   @Post('signup')
-  register(@Body() userRegister: UserRegisterDto) {
-    return this.authService.register(userRegister);
+  async register(@Body() userRegister: UserRegisterDto) {
+    return await this.authService.register(userRegister);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('check-password')
-  checkPassword(
+  async checkPassword(
     @Me() userPayload: UserPayload,
     @Body() checkDto: CheckPasswordDto,
   ) {
-    return this.authService.checkPassword(userPayload, checkDto);
+    return await this.authService.checkPassword(userPayload, checkDto);
   }
 }

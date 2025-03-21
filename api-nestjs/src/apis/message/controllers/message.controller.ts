@@ -7,12 +7,12 @@ export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @Post('/create')
-  createMessage(@Body() dto: CreateMessageDto) {
-    return this.messageService.createOne(dto);
+  async createMessage(@Body() dto: CreateMessageDto) {
+    return await this.messageService.createOne(dto);
   }
 
-  @Get('/:id')
-  getByConversation(@Param('id') id: string) {
-    return this.messageService.getByConvId(id);
+  @Get('/:conversation_id')
+  async getByConversation(@Param('conversation_id') id: string) {
+    return await this.messageService.getByConvId(id);
   }
 }
