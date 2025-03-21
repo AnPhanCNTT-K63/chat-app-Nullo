@@ -1,4 +1,5 @@
 import 'package:app_chat_nullo/views/account_screen.dart';
+import 'package:app_chat_nullo/views/chat_screen.dart';
 import 'package:app_chat_nullo/views/home_screen.dart';
 import 'package:app_chat_nullo/views/login_screen.dart';
 import 'package:app_chat_nullo/views/profile_screen.dart';
@@ -12,6 +13,7 @@ class AppRouter {
   static Handler _homeHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, dynamic> params) => HomeScreen(),
   );
+
   static Handler _loginHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, dynamic> params) => LoginScreen(),
   );
@@ -28,11 +30,16 @@ class AppRouter {
     handlerFunc: (BuildContext? context, Map<String, dynamic> params) => ProfileScreen(),
   );
 
+  static Handler _chatHandler = Handler(
+    handlerFunc: (BuildContext? context, Map<String, dynamic> params) => ChatScreen(),
+  );
+
   static void setupRouter() {
     router.define("/", handler: _homeHandler);
     router.define("/login", handler: _loginHandler);
     router.define("/register", handler: _registerHandler);
     router.define("/account", handler: _acccountHandler);
     router.define("/profile", handler: _profileHandler);
+    router.define("/chat", handler: _chatHandler);
   }
 }

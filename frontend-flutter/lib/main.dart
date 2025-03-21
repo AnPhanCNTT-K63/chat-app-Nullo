@@ -1,3 +1,4 @@
+import 'package:app_chat_nullo/providers/socket_provider.dart';
 import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:app_chat_nullo/routes/router.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => SocketProvider()),
       ],
       child: MyApp(),
     ),
