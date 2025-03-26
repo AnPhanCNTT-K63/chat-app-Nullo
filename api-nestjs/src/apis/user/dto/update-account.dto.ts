@@ -22,4 +22,11 @@ export class UpdateAccountDto {
   @IsOptional()
   @IsString()
   username: string;
+
+  @ApiProperty({
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  fcmToken: string;
 }

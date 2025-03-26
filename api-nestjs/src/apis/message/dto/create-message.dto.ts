@@ -27,5 +27,13 @@ export class CreateMessageDto {
   })
   @IsNotEmpty()
   @Transform(({ value }) => convertStringToObjectId(value))
+  receiver: Types.ObjectId;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty()
+  @Transform(({ value }) => convertStringToObjectId(value))
   conversation: Types.ObjectId;
 }

@@ -8,6 +8,7 @@ import { MediaModule } from './apis/media/media.module';
 import { ProfileModule } from './apis/profile/profile.module';
 import { ConversationModule } from './apis/conversation/conversation.module';
 import { MessageModule } from './apis/message/message.module';
+import { NotificationModule } from './apis/notification/notification.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MessageModule } from './apis/message/message.module';
     ProfileModule,
     ConversationModule,
     MessageModule,
+    NotificationModule,
   ],
   controllers: [],
   providers: [],

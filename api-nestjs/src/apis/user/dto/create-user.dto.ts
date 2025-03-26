@@ -25,4 +25,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+  })
+  @IsString()
+  fcmToken: string;
 }

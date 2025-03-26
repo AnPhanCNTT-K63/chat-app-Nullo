@@ -25,6 +25,14 @@ export class Message {
 
   @Prop({
     type: Types.ObjectId,
+    ref: 'User',
+    refClass: User,
+    required: true,
+  })
+  receiver: Types.ObjectId;
+
+  @Prop({
+    type: Types.ObjectId,
     ref: 'Conversation',
     refClass: Conversation,
     required: true,

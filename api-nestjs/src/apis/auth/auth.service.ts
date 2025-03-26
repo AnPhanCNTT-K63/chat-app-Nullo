@@ -47,6 +47,7 @@ export class AuthService {
         username,
         email,
         password: hashedPassword,
+        fcmToken: '',
       });
     } catch (error) {
       throw new BadRequestException(error);
