@@ -5,7 +5,7 @@
   class SocketService {
     // Socket instance
     late IO.Socket socket;
-    final String SOCKET_URL = dotenv.env['SOCKET_URL_DEV'] ?? "wss://10.0.2.2:3000";
+    final String SOCKET_URL = dotenv.env['SOCKET_URL'] ?? "ws://10.0.2.2:3000";
 
     // Stream controllers for events
     final _messageController = StreamController<Map<String, dynamic>>.broadcast();

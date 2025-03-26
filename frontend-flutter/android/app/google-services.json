@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "713141886917",
+    "project_id": "chat-app-nullo",
+    "storage_bucket": "chat-app-nullo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713141886917:android:09394ac789aff4d484b5ac",
+        "android_client_info": {
+          "package_name": "com.example.app_chat_nullo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1I0x04r6L-XyWMEM6Fixdgi4zB3a4r40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713141886917:android:067466da3d9f0fcf84b5ac",
+        "android_client_info": {
+          "package_name": "com.pakage.chatapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1I0x04r6L-XyWMEM6Fixdgi4zB3a4r40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

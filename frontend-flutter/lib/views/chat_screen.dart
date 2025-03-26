@@ -1,6 +1,8 @@
+import 'package:app_chat_nullo/apis/services/chat_service.dart';
 import 'package:app_chat_nullo/models/message_model.dart';
 import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:app_chat_nullo/utils/socket_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -14,7 +16,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final ChatService _chatService = ChatService();
+
   Map<String, dynamic>? selectedUser;
+  String conversationId = '';
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final SocketService _socketService = SocketService();
@@ -28,27 +33,59 @@ class _ChatScreenState extends State<ChatScreen> {
   late StreamSubscription _connectionSubscription;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments;
-    if (args != null && args is Map<String, dynamic>) {
-      selectedUser = args;
-      print('Received user in ChatScreen: $selectedUser');
-      _selectedReceiverId = selectedUser?["_id"];
-      _initializeChat();
-    } else {
-      print('No valid user data received in ChatScreen');
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is Map<String, dynamic>) {
+        selectedUser = args['user'];
+        conversationId = args['conversationId'];
+        _selectedReceiverId = selectedUser?["_id"];
+        _initializeChat();
+      }
+    });
+
+
+  }
+
+
+  Future<void> _getMessage(String conversationId) async {
+    try {
+      final response = await _chatService.getMessage(conversationId);
+
+        List<dynamic> messagesData = response["data"];
+
+        setState(() {
+          _messages.clear();
+          _messages.addAll(messagesData.map((msg) => Message.fromJson(msg)).toList());
+        });
+
+        _scrollToBottom();
+
+    } catch (e) {
+      print("Error fetching messages: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load messages. Try again.")),
+      );
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
+  Future<void> _storeMessage(BuildContext context, String message) async{
+    try{
+      await _chatService.createMessage(message, _currentUserId!, _selectedReceiverId!, conversationId);
+    }
+    catch(e){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Can't send message. Try again.")));
+      print("Error: $e");
+    }
   }
 
   void _initializeChat() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     _currentUserId = userProvider.id;
+
+
 
     if (_currentUserId != null) {
       _socketService.initSocket(_currentUserId!);
@@ -77,6 +114,10 @@ class _ChatScreenState extends State<ChatScreen> {
           _isConnected = status;
         });
       });
+
+      if (conversationId.isNotEmpty) {
+        _getMessage(conversationId);
+      }
     }
   }
 
@@ -119,6 +160,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     _scrollToBottom();
+    _storeMessage(context, messageText);
   }
 
   @override
@@ -139,6 +181,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Row(
           children: [
@@ -158,7 +201,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
-                  _isConnected ? 'Online' : 'Offline',
+                  _isConnected ? 'Connected' : 'Disconnected',
                   style: TextStyle(
                     fontSize: 12,
                     color: _isConnected ? Colors.green : Colors.grey,
@@ -186,6 +229,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Container(
               color: Colors.grey.shade100,
               child: ListView.builder(
+                key: const PageStorageKey('messageList'),
                 controller: _scrollController,
                 padding: const EdgeInsets.all(10),
                 itemCount: _messages.length,

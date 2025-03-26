@@ -47,6 +47,10 @@ dependencies:
   cached_network_image: ^3.4.1
   intl: ^0.20.2
   socket_io_client: ^3.0.2
+  firebase_core:
+  firebase_messaging:
+  flutter_local_notifications:
+  firebase_auth:
 
 dev_dependencies:
   flutter_test:

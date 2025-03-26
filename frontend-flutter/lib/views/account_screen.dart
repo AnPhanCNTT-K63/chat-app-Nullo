@@ -130,6 +130,7 @@ class _AccountScreenState extends State<AccountScreen> {
         _usernameController.text,
         _emailController.text,
         _passwordController.text,
+        '',
       );
 
       final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -145,6 +146,7 @@ class _AccountScreenState extends State<AccountScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Account updated successfully")),
       );
+      Navigator.pushNamed(context, '/login');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

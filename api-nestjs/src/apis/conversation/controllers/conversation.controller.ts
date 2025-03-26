@@ -7,17 +7,17 @@ export class ConversationController {
   constructor(private conversationService: ConversationService) {}
 
   @Get('/')
-  getALl() {
-    return this.conversationService.getAll();
+  async getALl() {
+    return await this.conversationService.getAll();
   }
 
   @Get('/:id')
-  getOne(@Param('id') id: string) {
-    return this.conversationService.getByUserId(id);
+  async getOne(@Param('id') id: string) {
+    return await this.conversationService.getByUserId(id);
   }
 
   @Post('/create')
-  createOne(@Body() dto: CreateConversationDto) {
-    return this.conversationService.createOne(dto);
+  async createOne(@Body() dto: CreateConversationDto) {
+    return await this.conversationService.createOne(dto);
   }
 }

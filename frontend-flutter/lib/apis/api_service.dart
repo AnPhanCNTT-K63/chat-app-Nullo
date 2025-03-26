@@ -4,9 +4,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
   final Dio dio = Dio(BaseOptions(
-    baseUrl: dotenv.env['API_URL_DEV'] ?? "http://10.0.2.2:3000/api/",
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    baseUrl: dotenv.env['API_URL_LOCAL'] ?? "http://10.0.2.2:3000/api/",
+    connectTimeout: const Duration(seconds: 15),
+    receiveTimeout: const Duration(seconds: 15),
     headers: {
       "Content-Type": "application/json",
       "Accept": "application/json",
@@ -84,7 +84,7 @@ class ApiService {
   dynamic _handleError(DioException e) {
     if (e.response != null) {
       print("Error: ${e.response?.statusCode} - ${e.response?.data}");
-      throw Exception("Error: ${e.response?.statusCode} - ${e.response?.data}");
+      throw e.response?.data["message"];
     } else {
       print("Dio Error: ${e.message}");
       throw Exception("Request failed: ${e.message}");

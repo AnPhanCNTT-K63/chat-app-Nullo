@@ -18,6 +18,9 @@ export class User {
   @Prop({ required: true, unique: true, type: String })
   password: string;
 
+  @Prop({ required: false, type: String })
+  fcmToken: string;
+
   @Prop({
     type: Types.ObjectId,
     required: false,

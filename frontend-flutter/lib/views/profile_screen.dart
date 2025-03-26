@@ -4,8 +4,8 @@ import 'package:app_chat_nullo/apis/services/user_service.dart';
 import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -21,8 +21,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _birthdayController = TextEditingController();
 
+  String userId = "";
   String _avatarUrl = "";
   String _originalAvatarUrl = "";
+  bool _isCurrentUser = false;
 
   bool _isEditing = false;
   bool _isLoading = false;
@@ -32,27 +34,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map?;
+      if (args != null && args.containsKey('userId')) {
+        userId = args['userId'];
+
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        _isCurrentUser = userId == userProvider.id;
+
+        _fetchUserData();
+      } else {
+        print("Error: No userId received!");
+      }
+    });
   }
 
   Future<void> _fetchUserData() async {
-    try{
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-      final response = await _userService.getProfile(userProvider.id.toString());
-      _firstNameController.text = response["data"]["profile"]["firstName"];
-      _lastNameController.text = response["data"]["profile"]["lastName"];
-      _phoneController.text = response["data"]["profile"]["phone"];
+    try {
+      final response = await _userService.getProfile(userId);
+      _firstNameController.text = response["data"]["profile"]["firstName"] ?? "";
+      _lastNameController.text = response["data"]["profile"]["lastName"] ?? "";
+      _phoneController.text = response["data"]["profile"]["phone"] ?? "";
       _birthdayController.text = DateFormat('yyyy-MM-dd').format(
           DateTime.parse(response["data"]["profile"]["birthday"])
-      );
-      _avatarUrl = response["data"]["profile"]["avatar"]["filePath"];
+      ) ?? "";
+      _avatarUrl = response["data"]["profile"]["avatar"]["filePath"] ?? "";
       _originalAvatarUrl = _avatarUrl;
     }
-    catch(e){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Something went wrong. Try again.")));
+    catch(e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please update your profile!")));
     }
-    finally{
+    finally {
       setState(() {
         _isFetching = false;
       });
@@ -119,35 +131,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _saveChanges(BuildContext context) async {
-    if (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty || _phoneController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("All fields are required")),
-      );
-      return;
-    }
+    // if (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty || _phoneController.text.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text("All fields are required")),
+    //   );
+    //   return;
+    // }
 
     setState(() {
       _isLoading = true;
     });
 
-    try{
-      final response = await _userService.updateProfile(_firstNameController.text, _lastNameController.text,  _phoneController.text, _birthdayController.text);
+    try {
+      final response = await _userService.updateProfile(_firstNameController.text, _lastNameController.text, _phoneController.text, _birthdayController.text);
+
       _firstNameController.text = response["data"]["firstName"];
       _lastNameController.text = response["data"]["lastName"];
       _phoneController.text = response["data"]["phone"];
       _birthdayController.text = response["data"]["birthday"];
 
-      if(_isChangeImage){
+      if (_isChangeImage) {
         await _mediaService.uploadAvatar(_avatarUrl);
         _isChangeImage = false;
       }
       _originalAvatarUrl = _avatarUrl;
     }
-    catch(e){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Something went wrong. Try again.")));
-      print(e);
+    catch(e) {
     }
-
 
     setState(() {
       _isLoading = false;
@@ -161,9 +171,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine if this is the current user's profile
+    final titleText = _isCurrentUser ? "My Profile" : "User Profile";
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("My Profile"),
+        title: Text(titleText),
         backgroundColor: Colors.blueGrey,
       ),
       body: _isFetching
@@ -266,8 +279,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 20),
 
-            // Edit Button (Shown only when not editing)
-            if (!_isEditing)
+            // Edit Button (Shown only when not editing AND when it's the current user's profile)
+            if (!_isEditing && _isCurrentUser)
               SizedBox(
                 width: double.infinity,
                 height: 50,

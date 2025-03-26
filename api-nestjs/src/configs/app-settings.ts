@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 export const appSettings = {
   port: Number(process.env.PORT) || 3000,
+  socketPort: Number(process.env.SOCKET_PORT),
   development: process.env.DEVELOPMENT,
   mainLanguage: process.env.MAIN_LANGUAGE || 'en',
   maxFileSize: {
@@ -28,6 +29,11 @@ export const appSettings = {
     folder: process.env.AWS_FOLDER_NAME_DEFAULT || 'marketplace',
     region: process.env.AWS_REGION,
     distribution: process.env.DISTRIBUTION_URL,
+  },
+  firebase: {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    key: process.env.FIREBASE_KEY,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
   },
   redis: {
     heathCheck: process.env.REDIS_HOST ? true : false,

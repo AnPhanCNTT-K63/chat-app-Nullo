@@ -32,7 +32,5 @@ export class CreateProfileDto {
     required: false,
   })
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
   birthday: Date;
 }

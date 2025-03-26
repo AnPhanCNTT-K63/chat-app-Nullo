@@ -6,8 +6,9 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { appSettings } from 'src/configs/app-settings';
 
-@WebSocketGateway({
+@WebSocketGateway(appSettings.socketPort, {
   cors: {
     origin: '*',
   },
