@@ -1,5 +1,5 @@
 .env
-
+chat-app-firbase.json
 # compiled output
 /dist
 /node_modules
