@@ -30,6 +30,11 @@ export const appSettings = {
     region: process.env.AWS_REGION,
     distribution: process.env.DISTRIBUTION_URL,
   },
+  firebase: {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    key: process.env.FIREBASE_KEY,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  },
   redis: {
     heathCheck: process.env.REDIS_HOST ? true : false,
     host: process.env.REDIS_HOST,
