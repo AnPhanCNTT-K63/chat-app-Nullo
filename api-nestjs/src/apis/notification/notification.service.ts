@@ -17,11 +17,7 @@ export class NotificationService {
     });
   }
 
-  async sendPushNotification(
-    receiverId: Types.ObjectId,
-    message: string,
-    conversationId: Types.ObjectId,
-  ) {
+  async sendPushNotification(receiverId: Types.ObjectId, message: string) {
     const user = await this.userService.getOne({ _id: receiverId });
     if (!user || !user.fcmToken) return;
 
