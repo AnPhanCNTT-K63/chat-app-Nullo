@@ -24,16 +24,15 @@ class ChatService {
     return response;
   }
 
-  Future<Map<String, dynamic>> createMessage(String text, String sender, String conversation) async {
+  Future<Map<String, dynamic>> createMessage(String text, String sender, String receiver, String conversation) async {
     final response = await _apiService.post("message/create", {
       "text": text,
       "sender": sender,
+      "receiver": receiver,
       "conversation": conversation,
     });
 
     return response;
   }
-
-
 
 }

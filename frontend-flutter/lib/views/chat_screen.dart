@@ -2,6 +2,7 @@ import 'package:app_chat_nullo/apis/services/chat_service.dart';
 import 'package:app_chat_nullo/models/message_model.dart';
 import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:app_chat_nullo/utils/socket_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -31,22 +32,6 @@ class _ChatScreenState extends State<ChatScreen> {
   late StreamSubscription _usersSubscription;
   late StreamSubscription _connectionSubscription;
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   final args = ModalRoute.of(context)?.settings.arguments;
-  //   if (args != null && args is Map<String, dynamic>) {
-  //     selectedUser = args['user'];
-  //     conversationId = args['conversationId'];
-  //     print('Received conversationId in ChatScreen: $conversationId');
-  //     print('Received user in ChatScreen: $selectedUser');
-  //     _selectedReceiverId = selectedUser?["_id"];
-  //     _initializeChat();
-  //   } else {
-  //     print('No valid user data received in ChatScreen');
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -60,7 +45,10 @@ class _ChatScreenState extends State<ChatScreen> {
         _initializeChat();
       }
     });
+
+
   }
+
 
   Future<void> _getMessage(String conversationId) async {
     try {
@@ -83,10 +71,9 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-
   Future<void> _storeMessage(BuildContext context, String message) async{
     try{
-      await _chatService.createMessage(message, _currentUserId!, conversationId);
+      await _chatService.createMessage(message, _currentUserId!, _selectedReceiverId!, conversationId);
     }
     catch(e){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Can't send message. Try again.")));

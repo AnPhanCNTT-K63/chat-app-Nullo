@@ -44,6 +44,7 @@ class AuthService {
         "username": username,
         "email": email,
         "password": password,
+        "fmcToken": ''
       });
 
       return response;

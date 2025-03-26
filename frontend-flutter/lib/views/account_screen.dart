@@ -130,6 +130,7 @@ class _AccountScreenState extends State<AccountScreen> {
         _usernameController.text,
         _emailController.text,
         _passwordController.text,
+        '',
       );
 
       final userProvider = Provider.of<UserProvider>(context, listen: false);

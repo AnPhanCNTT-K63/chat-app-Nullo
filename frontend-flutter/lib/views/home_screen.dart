@@ -430,18 +430,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               ),
                             ),
                           ),
-                          title: Flexible(
-                            child: Text(
+                          title: Text(
+
                               user["username"],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: smallScreen ? 14 : 16,
                               ),
                               overflow: TextOverflow.ellipsis,
-                            ),
+
                           ),
-                          subtitle: Flexible(
-                            child: Text(
+                          subtitle: Text(
                               user["email"],
                               style: TextStyle(
                                 color: Colors.grey[600],
@@ -449,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                            ),
+
                           ),
                           trailing: LayoutBuilder(
                             builder: (context, constraints) {
