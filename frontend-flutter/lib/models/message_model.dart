@@ -10,4 +10,13 @@ class Message {
     required this.text,
     required this.timestamp,
   });
+
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      senderId: json["sender"] ?? "",
+      receiverId: json["receiver"] ?? "",
+      text: json["text"] ?? "[No message]",
+      timestamp: DateTime.tryParse(json["createdAt"] ?? "") ?? DateTime.now(),
+    );
+  }
 }

@@ -32,4 +32,11 @@ class UserService {
 
     return response;
   }
+
+  Future<Map<String, dynamic>> getAllUsers() async {
+    var response = await _apiService.get("user");
+
+    return response;
+  }
+
 }

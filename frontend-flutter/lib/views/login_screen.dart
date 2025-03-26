@@ -1,6 +1,7 @@
 import 'package:app_chat_nullo/apis/services/auth_service.dart';
 import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +14,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
+
+  @override
+  void initState()  {
+    super.initState();
+  }
 
   Future<void> _login(BuildContext context) async {
     if (isLoading) return;
@@ -33,8 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushNamed(context, '/');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Something went wrong. Try again.")));
-      print("Login error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       if (mounted) setState(() => isLoading = false); // Prevent updating unmounted widgets
     }
@@ -42,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("Building LoginScreen"); // Debugging: check excessive re-renders
+    print("Building LoginScreen");
 
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],

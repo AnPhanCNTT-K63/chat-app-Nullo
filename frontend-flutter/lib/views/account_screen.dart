@@ -145,6 +145,7 @@ class _AccountScreenState extends State<AccountScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Account updated successfully")),
       );
+      Navigator.pushNamed(context, '/login');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

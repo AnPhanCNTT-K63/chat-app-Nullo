@@ -19,33 +19,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
       isLoading = true;
     });
 
-    final response = await _authService.register(
-      nameController.text,
-      emailController.text,
-      passwordController.text,
-    );
-
-    setState(() {
-      isLoading = false;
-    });
-
-    if (response["error"] == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Registration successful! Please log in."))
+    try
+    {
+       await _authService.register(
+        nameController.text,
+        emailController.text,
+        passwordController.text,
       );
-      Navigator.pushNamed(context, '/login');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response["error"]["message"].toString()))
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Registration successful! Please log in."))
+        );
+        Navigator.pushNamed(context, '/login');
+
+      setState(() {
+        isLoading = false;
+      });
     }
+    catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()))
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],
-      body: Center(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -106,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 children: [
                   Text("Already have an account? "),
                   TextButton(
-                    onPressed: () => Navigator.pushNamed(context, '/'),
+                    onPressed: () => Navigator.pushNamed(context, '/login'),
                     child: Text("Login"),
                   ),
                 ],
