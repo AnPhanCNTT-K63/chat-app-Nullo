@@ -3,6 +3,7 @@ import * as admin from 'firebase-admin';
 import { UserService } from '../user/user.service';
 import { Types } from 'mongoose';
 import { appSettings } from 'src/configs/app-settings';
+import { Type } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class NotificationService {
@@ -17,16 +18,24 @@ export class NotificationService {
     });
   }
 
-  async sendPushNotification(receiverId: Types.ObjectId, message: string) {
-    const user = await this.userService.getOne({ _id: receiverId });
-    if (!user || !user.fcmToken) return;
+  async sendPushNotification(
+    receiverId: Types.ObjectId,
+    senderId: Types.ObjectId,
+    message: string,
+  ) {
+    const receiver = await this.userService.getOne({ _id: receiverId });
+    const sender = await this.userService.getOne({ _id: senderId });
+
+    const title = sender?.username;
+
+    if (!receiver || !receiver.fcmToken) return;
 
     const payload = {
       notification: {
-        title: 'New Message!',
+        title: title,
         body: message,
       },
-      token: user.fcmToken,
+      token: receiver.fcmToken,
     };
 
     try {
