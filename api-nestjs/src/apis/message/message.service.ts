@@ -22,6 +22,7 @@ export class MessageService {
         dto.receiver,
         dto.sender,
         dto.text,
+        dto.conversation,
       );
 
       return message;
