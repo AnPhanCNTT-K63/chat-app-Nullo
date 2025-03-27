@@ -22,6 +22,7 @@ export class NotificationService {
     receiverId: Types.ObjectId,
     senderId: Types.ObjectId,
     message: string,
+    conversationId: Types.ObjectId,
   ) {
     const receiver = await this.userService.getOne({ _id: receiverId });
     const sender = await this.userService.getOne({ _id: senderId });
@@ -34,6 +35,10 @@ export class NotificationService {
       notification: {
         title: title,
         body: message,
+      },
+      data: {
+        receiver: JSON.stringify(receiver),
+        conversationId: JSON.stringify(conversationId),
       },
       token: receiver.fcmToken,
     };
