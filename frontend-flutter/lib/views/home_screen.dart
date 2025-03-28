@@ -180,18 +180,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           GestureDetector(
             onTap: () async {
               final RenderBox button = context.findRenderObject() as RenderBox;
-              final RenderBox overlay = Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
-              final RelativeRect position = RelativeRect.fromRect(
-                Rect.fromPoints(
-                  button.localToGlobal(Offset.zero, ancestor: overlay),
-                  button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
-                ),
-                Offset.zero & overlay.size,
-              );
+              final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+              final Offset buttonPosition = button.localToGlobal(Offset.zero, ancestor: overlay);
+              final double screenWidth = MediaQuery.of(context).size.width;
+              final double menuWidth = 180; // Adjust based on menu width
+              final double menuHeight = 160; // Approximate menu height
+
+              // Position the menu properly at the right edge of the avatar
+              final double menuX = screenWidth - menuWidth - 10; // Align to right side
+              final double menuY = buttonPosition.dy + button.size.height + 5; // Slightly below the avatar
 
               final result = await showMenu(
                 context: context,
-                position: position,
+                position: RelativeRect.fromLTRB(
+                  350, // Left boundary (aligned to the right)
+                  80, // Top position (below the avatar)
+                  screenWidth - 10, // Right boundary (keep within screen)
+                  menuY + menuHeight, // Bottom boundary (enough space for items)
+                ),
                 items: [
                   PopupMenuItem(
                     value: "profile",
@@ -266,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
             ),
           ),
+
           const SizedBox(width: 10),
         ],
       ),
@@ -452,19 +460,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           ),
                           trailing: LayoutBuilder(
                             builder: (context, constraints) {
-                              // For very small screens, use a menu icon
+                              // Use a menu icon for small screens
                               if (constraints.maxWidth < 100 || smallScreen) {
                                 return IconButton(
-                                  icon: const Icon(Icons.more_vert),
+                                  icon: const Icon(Icons.more_vert, size: 24, color: Colors.black54),
                                   onPressed: () {
                                     showModalBottomSheet(
                                       context: context,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                                      ),
                                       builder: (context) => Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           ListTile(
-                                            leading: const Icon(Icons.person),
-                                            title: const Text("Profile"),
+                                            leading: const Icon(Icons.person, color: Colors.blueAccent),
+                                            title: const Text("Profile", style: TextStyle(fontWeight: FontWeight.w500)),
                                             onTap: () {
                                               Navigator.pop(context);
                                               Navigator.pushNamed(
@@ -475,8 +486,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                             },
                                           ),
                                           ListTile(
-                                            leading: const Icon(Icons.chat_bubble_outline),
-                                            title: const Text("Chat"),
+                                            leading: const Icon(Icons.chat_bubble_outline, color: Colors.green),
+                                            title: const Text("Chat", style: TextStyle(fontWeight: FontWeight.w500)),
                                             onTap: () {
                                               Navigator.pop(context);
                                               _openChatScreen(context, user, currentUser["_id"]);
@@ -489,10 +500,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 );
                               }
 
-                              // For larger screens, show buttons
+                              // For larger screens, show buttons with enhanced UI
                               return Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  // Profile button with enhanced UI
                                   OutlinedButton(
                                     onPressed: () {
                                       Navigator.pushNamed(
@@ -505,33 +517,43 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(20),
                                       ),
-                                      side: BorderSide(color: currentTheme.primaryColor),
-                                      minimumSize: const Size(0, 36),
-                                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                                      foregroundColor: currentTheme.primaryColor,
+                                      side: BorderSide(color: currentTheme.primaryColor, width: 1.5),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                                     ),
                                     child: const Text("Profile"),
                                   ),
-                                  const SizedBox(width: 4),
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-                                      _openChatScreen(context, user, currentUser["_id"]);
-                                    },
-                                    icon: const Icon(Icons.chat_bubble_outline, size: 14),
-                                    label: const Text("Chat"),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: currentTheme.primaryColor,
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
+                                  const SizedBox(width: 8),
+                                  // Chat button as a modern circular icon button
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        _openChatScreen(context, user, currentUser["_id"]);
+                                      },
+                                      icon: const Icon(Icons.chat, color: Colors.white, size: 20),
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: currentTheme.primaryColor,
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(12), // Adjust size
                                       ),
-                                      minimumSize: const Size(0, 36),
-                                      padding: const EdgeInsets.symmetric(horizontal: 8),
                                     ),
                                   ),
                                 ],
                               );
                             },
                           ),
+
                         ),
                       ),
                     );

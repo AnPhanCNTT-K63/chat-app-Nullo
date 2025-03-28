@@ -21,12 +21,19 @@ class UserService {
   }
 
   Future<Map<String, dynamic>> updateProfile(String firstName, String lastName, String phone, String birthday) async {
-    var response = await _apiService.patch("user/update-profile", {
-      "firstName": firstName,
-      "lastName": lastName,
-      "phone": phone,
-      "birthday": birthday,
-    });
+
+    Map<String, dynamic> data = {};
+
+    if (firstName.isNotEmpty)
+      data["firstName"] = firstName;
+    if (lastName.isNotEmpty)
+      data["lastName"] = lastName;
+    if (phone.isNotEmpty)
+      data["phone"] = phone;
+    if (birthday.isNotEmpty)
+      data["birthday"] = birthday;
+
+    var response = await _apiService.patch("user/update-profile", data);
 
     return response;
   }
