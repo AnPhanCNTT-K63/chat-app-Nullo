@@ -55,14 +55,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _firstNameController.text = response["data"]["profile"]["firstName"] ?? "";
       _lastNameController.text = response["data"]["profile"]["lastName"] ?? "";
       _phoneController.text = response["data"]["profile"]["phone"] ?? "";
-      _birthdayController.text = DateFormat('yyyy-MM-dd').format(
-          DateTime.parse(response["data"]["profile"]["birthday"])
-      ) ?? "";
+
+      String? birthday = response["data"]["profile"]["birthday"];
+      if (birthday != null && birthday.isNotEmpty) {
+        _birthdayController.text = DateFormat('yyyy-MM-dd').format(DateTime.parse(birthday));
+      } else {
+        _birthdayController.text = "";
+      }
       _avatarUrl = response["data"]["profile"]["avatar"]["filePath"] ?? "";
       _originalAvatarUrl = _avatarUrl;
     }
     catch(e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please update your profile!")));
     }
     finally {
       setState(() {
@@ -74,8 +77,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
     if (image != null) {
+
       setState(() {
         _avatarUrl = image.path;
         _isChangeImage = true;
@@ -131,33 +134,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _saveChanges(BuildContext context) async {
-    // if (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty || _phoneController.text.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text("All fields are required")),
-    //   );
-    //   return;
-    // }
 
     setState(() {
       _isLoading = true;
     });
 
-    try {
       final response = await _userService.updateProfile(_firstNameController.text, _lastNameController.text, _phoneController.text, _birthdayController.text);
-
-      _firstNameController.text = response["data"]["firstName"];
-      _lastNameController.text = response["data"]["lastName"];
-      _phoneController.text = response["data"]["phone"];
-      _birthdayController.text = response["data"]["birthday"];
+      _firstNameController.text = response["data"]["firstName"] ?? "";
+      _lastNameController.text = response["data"]["lastName"] ?? "";
+      _phoneController.text = response["data"]["phone"] ?? "";
+      _birthdayController.text = response["data"]["birthday"] ?? "";
 
       if (_isChangeImage) {
         await _mediaService.uploadAvatar(_avatarUrl);
         _isChangeImage = false;
       }
       _originalAvatarUrl = _avatarUrl;
-    }
-    catch(e) {
-    }
+
 
     setState(() {
       _isLoading = false;

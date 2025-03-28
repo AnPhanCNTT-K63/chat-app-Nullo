@@ -2,7 +2,6 @@ import 'package:app_chat_nullo/apis/services/chat_service.dart';
 import 'package:app_chat_nullo/models/message_model.dart';
 import 'package:app_chat_nullo/providers/user_provider.dart';
 import 'package:app_chat_nullo/utils/socket_service.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -48,7 +47,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
 
   }
-
 
   Future<void> _getMessage(String conversationId) async {
     try {
@@ -97,7 +95,7 @@ class _ChatScreenState extends State<ChatScreen> {
             senderId: data['senderId'],
             receiverId: data['receiverId'],
             text: data['text'],
-            timestamp: DateTime.now(),
+            timestamp: DateTime.now().toUtc(),
           ));
         });
         _scrollToBottom();

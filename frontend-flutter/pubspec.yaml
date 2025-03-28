@@ -51,6 +51,12 @@ dependencies:
   firebase_messaging:
   flutter_local_notifications:
   firebase_auth:
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/icon.jpg"
+  name: "Nullo Chat"
 
 dev_dependencies:
   flutter_test:

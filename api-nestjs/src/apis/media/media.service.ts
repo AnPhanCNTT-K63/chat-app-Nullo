@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { appSettings } from 'src/configs/app-settings';
 import { IUploadedMulterFile, S3Service } from 'src/pakages/s3/s3.service';
 import { File } from './entities/file.entity';
@@ -35,7 +35,7 @@ export class MediaService {
       size,
       filePath: appSettings.s3.distribution + uploadedFile.key,
       folder,
-      createdBy: user._id,
+      createdBy: new Types.ObjectId(user._id),
     });
 
     if (!result) return new BadRequestException("Can't create file");
@@ -51,5 +51,14 @@ export class MediaService {
     if (!uploadedAvatar) throw new BadRequestException('Can not delte image');
 
     return uploadedAvatar;
+  }
+
+  async getImage(userId: Types.ObjectId) {
+    try {
+      const file = await this.fileModel.findOne({ createdBy: userId });
+      return file?.filePath;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }

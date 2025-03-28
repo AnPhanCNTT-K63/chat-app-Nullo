@@ -1,89 +1,125 @@
-import 'package:app_chat_nullo/providers/user_provider.dart';
-import 'package:app_chat_nullo/routes/router.dart';
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 
-/// ✅ Handle background messages
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("📩 Background message received: ${message.notification?.title}");
+import 'firebase_options.dart';
+import 'providers/user_provider.dart';
+import 'routes/router.dart';
+import 'utils/notification_service.dart';
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint("Background message received: ${message.notification?.title}");
 }
 
 void main() async {
+  await _initializeApp();
+}
+
+Future<void> _initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    print("✅ Firebase initialized successfully!");
+    await _initializeFirebase();
+    await dotenv.load(fileName: ".env");
+    AppRouter.setupRouter();
 
-    /// ✅ Request notification permission
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    NotificationSettings settings = await messaging.requestPermission();
-    print("🔔 Notification permission: ${settings.authorizationStatus}");
-
-    /// ✅ Set background message handler
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    final token = await _getStoredToken();
+    _runApp(token);
   } catch (e) {
-    print("❌ Firebase initialization failed: $e");
+    debugPrint("App initialization failed: $e");
   }
+}
 
-  await dotenv.load(fileName: ".env");
+Future<void> _initializeFirebase() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint("✅ Firebase initialized successfully!");
 
-  AppRouter.setupRouter();
+  final messaging = FirebaseMessaging.instance;
+  final settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
 
+  debugPrint("🔔 Notification permission: ${settings.authorizationStatus}");
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+}
+
+Future<String?> _getStoredToken() async {
+  final storage = FlutterSecureStorage();
+  return await storage.read(key: "jwt_token");
+}
+
+void _runApp(String? token) {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()),
       ],
-      child: MyApp(),
+      child: MyApp(initialRoute: token != null ? '/' : '/login'),
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
+  final String initialRoute;
+
+  const MyApp({Key? key, required this.initialRoute}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();
-    _setupFirebaseMessaging();  // ✅ Call global notification setup
+    WidgetsBinding.instance.addObserver(this);
+    _setupFirebaseMessaging();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   void _setupFirebaseMessaging() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        print("📩 Foreground Notification: ${message.notification!.title}");
+    final notificationService = NotificationService(
+        navigatorKey: _navigatorKey,
+        scaffoldMessengerKey: _scaffoldMessengerKey
+    );
 
-        // Show a local notification if needed (Example: Snackbar)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message.notification!.title ?? "New message")),
-        );
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("📲 User clicked the notification!");
-      if (message.data.containsKey('conversationId')) {
-        Navigator.pushNamed(context, '/chat', arguments: {
-          'conversationId': message.data['conversationId'],
-        });
-      }
-    });
+    notificationService.setupForegroundNotifications();
+    notificationService.setupNotificationClickHandling();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Nullo Chat',
+      navigatorKey: _navigatorKey,
+      scaffoldMessengerKey: _scaffoldMessengerKey,
       onGenerateRoute: AppRouter.router.generator,
-      initialRoute: '/',
+      initialRoute: widget.initialRoute,
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+        snackBarTheme: SnackBarThemeData(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+      ),
     );
   }
 }

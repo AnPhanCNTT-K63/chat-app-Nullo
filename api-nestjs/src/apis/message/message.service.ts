@@ -20,7 +20,9 @@ export class MessageService {
 
       await this.notificationService.sendPushNotification(
         dto.receiver,
+        dto.sender,
         dto.text,
+        dto.conversation,
       );
 
       return message;

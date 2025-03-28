@@ -64,7 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
-                  labelText: "Full Name",
+                  labelText: "Username (Name display in chat)",
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),

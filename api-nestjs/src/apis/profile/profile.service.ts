@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Profile } from './entities/profile.entity';
-import { Model, Types } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { IUploadedMulterFile } from 'src/pakages/s3/s3.service';
 import { MediaService } from '../media/media.service';
@@ -50,7 +50,7 @@ export class ProfileService {
         user: new Types.ObjectId(user._id),
       });
 
-      newAvatarFile.createdBy = user._id;
+      newAvatarFile.createdBy = new Types.ObjectId(user._id);
 
       await newAvatarFile.save();
 

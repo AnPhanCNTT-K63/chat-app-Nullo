@@ -3,10 +3,14 @@ import * as admin from 'firebase-admin';
 import { UserService } from '../user/user.service';
 import { Types } from 'mongoose';
 import { appSettings } from 'src/configs/app-settings';
+import { MediaService } from '../media/media.service';
 
 @Injectable()
 export class NotificationService {
-  constructor(private readonly userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly mediaService: MediaService,
+  ) {
     admin.initializeApp({
       credential: admin.credential.cert({
         projectId: appSettings.firebase.projectId,
@@ -17,21 +21,38 @@ export class NotificationService {
     });
   }
 
-  async sendPushNotification(receiverId: Types.ObjectId, message: string) {
-    const user = await this.userService.getOne({ _id: receiverId });
-    if (!user || !user.fcmToken) return;
+  async sendPushNotification(
+    receiverId: Types.ObjectId,
+    senderId: Types.ObjectId,
+    message: string,
+    conversationId: Types.ObjectId,
+  ) {
+    const receiver = await this.userService.getOne({ _id: receiverId });
+    const sender = await this.userService.getOne({ _id: senderId });
+
+    const image = (await this.mediaService.getImage(senderId)) ?? '';
+
+    const title = sender?.username;
+
+    if (!receiver || !receiver.fcmToken) return;
 
     const payload = {
       notification: {
-        title: 'New Message!',
+        title: title,
         body: message,
       },
-      token: user.fcmToken,
+
+      data: {
+        senderImage: JSON.stringify(image),
+        sender: JSON.stringify(sender),
+        receiver: JSON.stringify(receiver),
+        conversationId: JSON.stringify(conversationId),
+      },
+      token: receiver.fcmToken,
     };
 
     try {
       await admin.messaging().send(payload);
-      console.log('Notification sent successfully');
     } catch (error) {
       console.error('Error sending notification:', error);
     }
