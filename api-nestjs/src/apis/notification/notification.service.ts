@@ -3,11 +3,14 @@ import * as admin from 'firebase-admin';
 import { UserService } from '../user/user.service';
 import { Types } from 'mongoose';
 import { appSettings } from 'src/configs/app-settings';
-import { Type } from '@aws-sdk/client-s3';
+import { MediaService } from '../media/media.service';
 
 @Injectable()
 export class NotificationService {
-  constructor(private readonly userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly mediaService: MediaService,
+  ) {
     admin.initializeApp({
       credential: admin.credential.cert({
         projectId: appSettings.firebase.projectId,
@@ -27,6 +30,8 @@ export class NotificationService {
     const receiver = await this.userService.getOne({ _id: receiverId });
     const sender = await this.userService.getOne({ _id: senderId });
 
+    const image = (await this.mediaService.getImage(senderId)) ?? '';
+
     const title = sender?.username;
 
     if (!receiver || !receiver.fcmToken) return;
@@ -36,7 +41,10 @@ export class NotificationService {
         title: title,
         body: message,
       },
+
       data: {
+        senderImage: JSON.stringify(image),
+        sender: JSON.stringify(sender),
         receiver: JSON.stringify(receiver),
         conversationId: JSON.stringify(conversationId),
       },
@@ -45,7 +53,6 @@ export class NotificationService {
 
     try {
       await admin.messaging().send(payload);
-      console.log('Notification sent successfully');
     } catch (error) {
       console.error('Error sending notification:', error);
     }
