@@ -1,5 +1,5 @@
 # Chat App: Nullo
-This is a full-stack dating application built with NestJS for the backend and Flutter for the frontend.
+This is a full-stack chat app built with NestJS for the backend and Flutter for the frontend.
 
 ## Project Structure
 ```sh
