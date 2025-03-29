@@ -13,7 +13,7 @@ chat-app-Nullo/
 
 - Frontend: Flutter (Dart, Provider for state management)
 
-- Database: MongoDB
+- Database: MongoDB, firebase
 
 - Message: Socket.io
 
