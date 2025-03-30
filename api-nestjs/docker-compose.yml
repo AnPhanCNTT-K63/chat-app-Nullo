@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mongodb-chat-app:
+    image: mongo:latest
+    container_name: mongodb-chat-app
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    networks:
+      - app-network
+
+  nullo-chat-app:
+    build:
+      context: .
+    container_name: nullo-chat-app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongodb-chat-app
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URI: ${MONGO_URI}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
