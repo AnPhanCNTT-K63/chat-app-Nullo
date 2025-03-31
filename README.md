@@ -29,6 +29,11 @@ npm install
 ```sh
 npm run start:dev
 ```
+### Or Run with Docker
+```sh
+cd api-nestjs
+docker-compose up --build
+```
 
 ### **Frontend (Flutter)**
 #### Prerequisites:
