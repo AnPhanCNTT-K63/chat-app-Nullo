@@ -16,8 +16,7 @@ chat-app-Nullo/
 - **Messaging**: Socket.io
 - **Storage**: AWS S3
 - **CDN**: AWS CloudFront
-- **Deployment**: Railway (8GB RAM / 8 vCPU per service)
-
+  
 ## Setup Instructions
 
 ### **Backend (NestJS)**
