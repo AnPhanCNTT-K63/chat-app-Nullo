@@ -25,14 +25,14 @@ chat-app-Nullo/
 cd api-nestjs
 npm install
 ```
-#### Running the Backend:
-```sh
-npm run start:dev
-```
 ### Or Run with Docker
 ```sh
 cd api-nestjs
 docker-compose up --build
+```
+#### Running the Backend:
+```sh
+npm run start:dev
 ```
 
 ### **Frontend (Flutter)**
